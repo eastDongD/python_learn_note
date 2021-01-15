@@ -16,6 +16,7 @@ a=3
 print("a是整数",a)
 a="str"
 print("a是字符串",a)     #即同一个变量可以赋不同类型的值
+print(type(a))          #显示数据的类型 <class 'str'>
 
 
 
