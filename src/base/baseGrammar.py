@@ -11,6 +11,10 @@ time.sleep(3)
 stonenumber=int(input("输入你的年龄"))
 if(20<=stonenumber<=50):
     print("学习的好时机")
+elif(stonenumber>50):
+    print("学习的坏时机")
+else:
+    print("玩的时机")
 
 #这个是注释，以#为开头
 a=int(input("请输入一个数字"))
