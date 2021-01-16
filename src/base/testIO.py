@@ -1,3 +1,10 @@
+#   input()返回的类型是str，如果想比较需要转换为int型号如：grade=int(input("请输入你的分数"))
+grade=int(input("请输入你的分数"))
+if(grade>60):
+    print("你及格了")
+    print("你的成绩是"+str(grade)) #字符串拼接时要保证grade是字符串
+
+
 #字符串str类型和字节byte类型的转换，及传输时按照固定格式解码以及编码
 if(True):
     print("abc")    #"abc"是一个字符串str类型的数据
