@@ -23,4 +23,17 @@ if(a/2==0):
 else:
     print("你输入的是奇数")
 
+#for循环和while循环的使用，可以搭配break和continue，和c和c++一样
+names = ['Michael', 'Bob', 'Tracy']
+for name in names:
+    print(name)
+
+
+sum = 0
+n = 99
+while n > 0:
+    sum = sum + n
+    n = n - 2
+print(sum)
+
 

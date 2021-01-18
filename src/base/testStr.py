@@ -22,6 +22,9 @@ if(True):
 if(True):
     print("len(\"中文\")=",len("中文"))      #获取字符串的长度
     print("len(\"中文\".encode(\"utf-8\"))=",len("中文".encode("utf-8")))
+    #替换字母
+    a = 'abc'
+    a=a.replace('a', 'A')
 
 
 
