@@ -1,3 +1,2 @@
-L = [('Bob', 75), ('Adam', 92), ('Bart', 66), ('Lisa', 88)]
-def by_name(t):
-    return t[0]
+L = list(filter(lambda n: n%2==1, range(1, 20)))
+print(L)

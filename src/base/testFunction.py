@@ -181,14 +181,112 @@ sorted([36, 5, -12, 9, -21], key=abs)#按绝对值大小排序
 sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower)#忽略大小写的排序
 sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower, reverse=True)#要进行反向排序，不必改动key函数，可以传入第三个参数reverse=True
 
+#返回函数
+def lazy_sum(*args):#定义一个返回求和函数的函数
+    def sum():
+        ax = 0
+        for n in args:
+            ax = ax + n
+        return ax
+    return sum
+f = lazy_sum(1, 3, 5, 7, 9)#此时f是一个函数，但是未执行
+f()#执行返回的该函数，结果为传入值的求和
+#当我们调用lazy_sum()时，每次调用都会返回一个新的函数，即使传入相同的参数
+#即两次相同的调用返回的函数不一样，但是函数的计算结果是一样的。
+#返回一个函数时，牢记该函数并未执行，返回函数中不要引用任何可能会变化的变量。
+#返回闭包时牢记一点：返回函数不要引用任何循环变量，或者后续会发生变化的变量
+#因为循环变量你认为是从小到大的，但是因为返回函数是最后计算的，计算时
+#循环变量已经变为最大了，故和你想的结果不一样 如：
+def count():
+    fs = []
+    for i in range(1, 4):
+        def f():
+             return i*i
+        fs.append(f)
+    return fs
+
+f1, f2, f3 = count()
+#此时 f1() f2() f3()的值均为9
+#如果一定要循环变量，则再建一个函数
+def count():
+    def f(j):
+        def g():
+            return j*j
+        return g
+    fs = []
+    for i in range(1, 4):
+        fs.append(f(i)) # f(i)立刻被执行，因此i的当前值被传入f()
+    return fs
+#返回一个函数时，牢记该函数并未执行，返回函数中不要引用任何可能会变化的变量。
+
+#匿名函数，不用显示的定义函数，防止命名冲突
+#用法： 关键字lambda表示匿名函数，冒号前面的x表示函数参数,冒号后面为返回的表达式
+#此时如map需要传入函数时，不用显示的定义一个函数了
+list(map(lambda x: x * x, [1, 2, 3, 4, 5, 6, 7, 8, 9]))
+ f = lambda x: x * x#即匿名函数也可以当成一个函数对象，然后用f调用 f(5)，同时也可以返回一个匿名函数
+
+#装饰器：在代码运行期间，增加函数的功能，而不修改函数的定义
+def now():
+    print('2015-3-25')
+now.__name__ #函数的名字 ，__name__取函数的名字(左右都是两个下划线)
+
+#不带参数的装饰器：
+import functools
+
+def log(func):
+    @functools.wraps(func)   #让now的函数名字还是now
+    def wrapper(*args, **kw):
+        print('call %s():' % func.__name__)
+        return func(*args, **kw)
+    return wrapper
+@log            #相当于now = log(now)
+def now():
+    print('2015-3-25')
+
+#带参数的装饰器：
+import functools
+
+def log(text):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kw):
+            print('%s %s():' % (text, func.__name__))
+            return func(*args, **kw)
+        return wrapper
+    return decorator
+@log('execute')
+def now():
+    print('2015-3-25')
+
+#用了装饰器后在执行now会在打印2015-3-25前加一个call now()
 
 
+#偏函数 当函数的参数个数太多，需要简化时，使用functools.partial可以创建一个新的函数，这个新函数可以固定住原函数的部分参数，从而在调用时更简单。
+#functools.partial的作用就是，把一个函数的某些参数给固定住（也就是设置默认值），返回一个新的函数，调用这个新函数会更简单
+import functools
+int2 = functools.partial(int, base=2)#把int的base值默认设为2
+max2 = functools.partial(max, 10) #把10作为max的一个输入参数
+
+#总结：
+#int2 = functools.partial(参数1，参数2，参数3)
+#参数1：函数对象， 参数2：*args  可变参数，接收tuple，list
+#参数3：*kw  关键字参数，接收dict
+#参数1必填，参数2和参数3可省略，那就和原函数没区别了，因为参数1就是原函数，参数2就是可变参数，参数3为关键字参数，int自带关键字参数base，当不传为默认值，传入时必须以base=xxx的形式，对应原始的关键字，参数2传入的话会组装成tuple或list，再通过*args 传入int（*args）如max
+
+#上两句相当于定义了一个int2函数：
+def int2(x, base=2):
+    return int(x, base)
+
+
+int2('1000000')
+int2('1000000', base=10)#同时调用时base的值可以显示的输入
 
 
 #常用函数
 abs(-1)
 max(1,2)
 int("123")
+int('12345', base=8)#int()函数还提供额外的base参数，默认值为10。如果传入base参数，就可以做N进制的转换
 #函数名其实就是指向一个函数对象的引用，完全可以把函数名赋给一个变量，相当于给这个函数起了一个“别名”
 a = abs # 变量a指向abs函数
 a(-1) # 所以也可以通过a调用abs函数
