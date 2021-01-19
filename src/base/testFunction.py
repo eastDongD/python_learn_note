@@ -119,6 +119,72 @@ f1(*args, **kw)  #tuple可以对参数进行分别赋值，但是函数参数中
 #python没有做尾递归优化，所以依旧会溢出
 #即尾递归是指，在函数返回的时候，调用自身本身，并且，return语句不能包含表达式。这样，编译器或者解释器就可以把尾递归做优化，使递归本身无论调用多少次，都只占用一个栈帧，不会出现栈溢出的情况。
 
+
+
+#函数式编程可以把变量指向函数
+def p(x):
+    print(x)
+    return 1
+
+a=p#即变量指向函数
+a(5)#通过变量调用函数
+#可以理解为：函数名其实就是指向函数的变量！对于abs()这个函数，完全可以把函数名abs看成变量，它指向一个可以计算绝对值的函数！
+#由于abs函数实际上是定义在import builtins模块中的，所以要让修改abs变量的指向在其它模块也生效，要用import builtins; builtins.abs = 10
+
+#高阶函数：一个函数接收另一个函数作为参数
+def add(x, y, f):
+    return f(x) + f(y)
+add(-5, 6, abs)#结果为11
+
+#map和reduce最好不要直接用现成的函数，容易找不到，先自己封装下(即随便定义一个函数，该函数直接调用已有的函数）
+#找到函数方法：str.capitalize 即函数名前加所属的类名（数据类型名称）
+#map()函数接收两个参数，一个是函数，一个是Iterable，map将传入的函数依次作用到序列的每个元素，并把结果作为新的Iterator返回。
+def f(x):
+    return x*x
+r=map(f,list(range(10)))
+list(r)#由于结果r是一个Iterator，Iterator是惰性序列，因此通过list()函数让它把整个序列都计算出来并返回一个list
+
+#reduce把一个函数作用在一个序列[x1, x2, x3, ...]上，这个函数必须接收两个参数，reduce把结果继续和序列的下一个元素做累积计算
+#如 reduce(f, [x1, x2, x3, x4]) = f(f(f(x1, x2), x3), x4)
+from functools import reduce
+def fn(x, y):
+    return x * 10 + y
+reduce(fn, [1, 3, 5, 7, 9])
+
+from functools import reduce
+def fn(x, y):
+    return x * 10 + y
+def char2num(s):
+    digits = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+    return digits[s]
+reduce(fn, map(char2num, '13579')) #即将字符串转换为整数
+
+#可以用lambda函数进行化简 ？？？？？？？
+from functools import reduce
+DIGITS = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+def char2num(s):
+    return DIGITS[s]
+def str2int(s):
+    return reduce(lambda x, y: x * 10 + y, map(char2num, s))
+
+#filter筛选序列用，不符合条件的删除
+#filter()也接收一个函数和一个序列。和map()不同的是，filter()把传入的函数依次作用于每个元素，然后根据返回值是True还是False决定保留还是丢弃该元素。
+def is_odd(n):
+    return n % 2 == 1
+list(filter(is_odd, [1, 2, 4, 5, 6, 9, 10, 15]))#结果为[1, 5, 9, 15]
+
+#sorted函数进行排序
+#sorted()函数也是一个高阶函数，它还可以接收一个key函数来实现自定义的排序
+#key指定的函数将作用于list的每一个元素上，并根据key函数返回的结果进行排序
+sorted([36, 5, -12, 9, -21], key=abs)#按绝对值大小排序
+#默认情况下，对字符串排序，是按照ASCII的大小比较的，由于'Z' < 'a'，结果，大写字母Z会排在小写字母a的前面。
+sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower)#忽略大小写的排序
+sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower, reverse=True)#要进行反向排序，不必改动key函数，可以传入第三个参数reverse=True
+
+
+
+
+
 #常用函数
 abs(-1)
 max(1,2)
