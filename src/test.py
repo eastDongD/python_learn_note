@@ -1,9 +1,19 @@
-def move(n,a,b,c):
-    if n==1:
-        print(a+"--->"+c)
-    else:
-        move(n-1,a,c,b)
-        print(a+"--->"+c)
-        move(n-1,b,a,c)
-
-move(3,"A","B","C")
+def triangles():
+    max = 10
+    pre = [1]
+    n = 0
+    while n < max:
+        yield pre
+        temp = []
+        for x in range(len(pre)+1):
+            if x == 0:
+                temp.append(1)
+            elif x == len(pre):
+                temp.append(1)
+            else:
+                temp.append(pre[x-1] + pre[x])
+        n = n + 1
+        pre = temp
+g=triangles()
+for x in g:
+    print(x)

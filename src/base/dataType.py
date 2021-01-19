@@ -11,6 +11,14 @@ print("10/3=",10/3,"10//3=",10//3,"10%3=",10%3)
 True and False      #两个bool值
 None                #空值
 
+n, a, b = 0, 0, 1#赋值
+
+a, b = b, a + b#相当于
+
+t = (b, a + b) # t是一个tuple
+a = t[0]
+b = t[1]
+
 
 a=3
 print("a是整数",a)
