@@ -146,7 +146,7 @@ if False:
     r=move(100, 100, 60, 1)#r为一个tuple
 
 
-
+#如果没有return语句，函数执行完毕后也会返回结果，只是结果为None。return None可以简写为return。
 if False:
 
     #python没有做尾递归优化，所以依旧会溢出
