@@ -1,10 +1,23 @@
-# -*- coding: utf-8 -*-
-from enum import Enum, unique
-class Gender(Enum):
-    Male = 0
-    Female = 1
+from functools import reduce
 
-class Student(object):
-    def __init__(self, name, gender):
-        self.name = name
-        self.gender = gender
+def str2num(s):
+    try:
+        a=int(s)
+        return a
+    except ValueError as b:
+        print("ValueError")
+
+  
+
+def calc(exp):
+    ss = exp.split('+')
+    ns = map(str2num, ss)
+    return reduce(lambda acc, x: acc + x, ns)
+
+def main():
+    r = calc('100 + 200 + 345')
+    print('100 + 200 + 345 =', r)
+    r = calc('99 + 88 + 7.6')
+    print('99 + 88 + 7.6 =', r)
+
+main()
