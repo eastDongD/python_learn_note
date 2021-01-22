@@ -1,16 +1,16 @@
 #下面是字符和整数的转换
-if(True):
+if(False):
     print("ord(\"中\")=",ord("中"))  #获取字符对应的整数编码 可能是Unicode编码
     print("chr(20013)="+chr(20013))   #将整数变为其对应的字符
 #字符串str类型和字节byte类型的转换，及传输时按照固定格式解码以及编码
-if(True):
+if(False):
     print("abc")    #"abc"是一个字符串str类型的数据
     print(b"abc")   #b"abc"是一个字节byte类型的数据，用于数据传输
     print("\"中文\".encode(\"utf-8\")=","中文".encode("utf-8"))    #将字符串"中文"按照utf-8编码转换为byte类型数据
     print(r"b'\xe4\xb8\xad\xe6\x96\x87'="+b"\xe4\xb8\xad\xe6\x96\x87".decode("utf-8"))   #将bype类型数据用utf-8读取
     print("b\"abc\".decode(\"ascii\")="+b"abc".decode("ascii",errors="ignore"))   #转换时忽略存在的错误
 #字符串str的表示方式
-if(True):
+if(False):
     str1="i'm a boy"
     str2="i'm a \"boy\" "
     str3="i'm a \\boy\\"
@@ -22,9 +22,15 @@ if(True):
 if(True):
     print("len(\"中文\")=",len("中文"))      #获取字符串的长度
     print("len(\"中文\".encode(\"utf-8\"))=",len("中文".encode("utf-8")))
+    l="13,14,15,16,17,18".split(",")  #用split分割字符串，返回一个list
+    print(l)
     #替换字母
     a = 'abc'
     a=a.replace('a', 'A')
+    print("adsf".upper())#大写
+    print("aQWEds".lower())#小写
+    print("adsfdsaf".capitalize())#首字母大写
+    print(','.join(l))#l为一个list，将list的内容以','为间隔，拼接为一个字符串显示
 
 
 

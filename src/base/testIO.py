@@ -31,3 +31,4 @@ if(True):
     r=2.5
     s=3.14*r**2
     print(f"the area of a circle with radius {r} is {s:.1f}")          #按照变量名去填，对数字可加格式
+    print(','.join(l))#l为一个list，将list的内容以','为间隔，拼接为一个字符串显示
