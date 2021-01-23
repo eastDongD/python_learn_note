@@ -111,12 +111,21 @@ if False:
 # prints the words after removing all duplicate words and sorting them alphanumerically. 
 # Suppose the following input is supplied to the program: hello world and practice makes perfect 
 # and hello world again Then, the output should be: again and hello makes perfect practice world
-s=input("please input some words:")
-print(sorted(list(set(s.split(" ")))))
-a=[x for x in s.split(" ")]
-print(sorted(list(set(a))))  #此sort会先大写，后小写，然后按照字母顺序排,所以你复制的Then一直在最前
+if False:
+    s=input("please input some words:")
+    print(sorted(list(set(s.split(" ")))))
+    a=[x for x in s.split(" ")]
+    print(sorted(list(set(a))))  #此sort会先大写，后小写，然后按照字母顺序排,所以你复制的Then一直在最前
 
 
-
+# 11.Question: Write a program which accepts a sequence of comma separated 4 digit binary numbers
+#  as its input and then check whether they are divisible by 5 or not. The numbers that are divisible 
+# by 5 are to be printed in a comma separated sequence. Example: 0100,0011,1010,1001 Then the output 
+# should be: 1010 Notes: Assume the data is input by console.
+if False:
+    s=input("please input some binary numbers:")
+    l=s.split(",")
+    k=[x for x in l if int(x,2)%5==0]
+    print(",".join(k))
 
 
