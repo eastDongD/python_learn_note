@@ -128,4 +128,108 @@ if False:
     k=[x for x in l if int(x,2)%5==0]
     print(",".join(k))
 
+#12.Write a program, which will find all such numbers between 1000 and 3000 (both included) such 
+# that each digit of the number is an even number. The numbers obtained should be printed in
+#   a comma-separated sequence on a single line.
+if False:
+    l=[str(x) for x in range(1000,3001) if int(str(x)[0])%2==0 and int(str(x)[1])%2==0 and int(str(x)[2])%2==0 and int(str(x)[3])%2==0]
+    print(",".join(l))
 
+
+#13. Write a program that accepts a sentence and calculate the number of letters and digits. 
+# Suppose the following input is supplied to the program: hello world! 123 Then, 
+# the output should be: LETTERS 10 DIGITS 3
+if False:
+    s=input("please input a sentence:")
+    letNum,digNum=0,0
+    for x in s:
+        if x.islower() or x.isupper():
+            letNum+=1
+        if x.isdigit():
+            digNum+=1
+    print(letNum)
+    print(digNum)
+
+#14. Write a program that accepts a sentence and calculate the number of upper case letters and
+#  lower case letters. Suppose the following input is supplied to the program: Hello world! 
+# Then, the output should be: UPPER CASE 1 LOWER CASE 9
+if False:
+    s=input("please input a sentence:")
+    lowNum,uppNum=0,0
+    for x in s:
+        if x.islower():
+            lowNum+=1
+        if x.isupper():
+            uppNum+=1
+    print(uppNum)
+    print(lowNum)
+
+#15.Write a program that computes the value of a+aa+aaa+aaaa with a given digit as
+#  the value of a. Suppose the following input is supplied to the program: 9 
+# Then, the output should be: 11106
+# a = input()
+# n1 = int( "%s" % a )
+# n2 = int( "%s%s" % (a,a) )
+# n3 = int( "%s%s%s" % (a,a,a) )
+# n4 = int( "%s%s%s%s" % (a,a,a,a) )
+# print(n1+n2+n3+n4)
+if False:
+    def sum(x):
+        if not isinstance(x,int):
+            raise TypeError("x is not a digit")
+        i=1
+        sum=0
+        while(i<5):
+            j=1
+            y=x
+            while(j<i):
+                y=y*10+x
+                j+=1
+            i+=1
+            print(y)
+            sum+=y
+        return sum
+    print(sum(9))
+
+#16.Use a list comprehension to square each odd number in a list. The list is input by a 
+# sequence of comma-separated numbers. Suppose the following input is supplied to the
+#  program: 1,2,3,4,5,6,7,8,9 Then, the output should be: 1,3,5,7,9
+if False:
+    s=input("please input a sequence of comma-separated numbers:")
+    l=[x for x in s.split(",") if int(x)%2!=0]
+    print(",".join(l))
+
+#17  Write a program that computes the net amount of a bank account based a transaction 
+# log from console input. The transaction log format is shown as following: D 100 W 200
+#D means deposit while W means withdrawal. Suppose the following input is supplied
+#  to the program: D 300 D 300 W 200 D 100 Then, the output should be: 500
+if False:
+    s=input("please you account:")
+    D=[]
+    W=[]
+    k=s.split(" ")
+    for i,value in enumerate(k):
+        if(value=="D"):
+            D.append(k[i+1])
+        if(value=="W"):
+            W.append(k[i+1])
+    d,w=0,0
+    for x in D:
+        d+=int(x)
+    for y in W:
+        w+=int(y)
+    print(d-w)
+
+#18.A website requires the users to input username and password to register. 
+# Write a program to check the validity of password input by users. 
+# Following are the criteria for checking the password:
+# At least 1 letter between [a-z]
+# At least 1 number between [0-9]
+# At least 1 letter between [A-Z]
+# At least 1 character from [$#@]
+# Minimum length of transaction password: 6
+# Maximum length of transaction password: 12 Your program should accept
+#  a sequence of comma separated passwords and will check them according to
+#   the above criteria. Passwords that match the criteria are to be printed, 
+#   each separated by a comma. Example If the following passwords are given as input
+#    to the program: ABd1234@1,a F1#,2w3E*,2We3345 Then, the output of the program should be: ABd1234@1
