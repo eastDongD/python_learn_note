@@ -163,10 +163,76 @@ if False:
     # Exit code: 0
 
 
+# 多线程
+# 写了如何实现多线程，以及多线程时对于临界资源如何加锁，还要python的缺点GIL锁
+if False:
+    # 任何进程默认就会启动一个线程，我们把该线程称为主线程，主线程又可以启动新的线程，
+    # 大部分情况下我们使用Python的threading模块帮助实现多线程，如果实现不了，可以使用更基础的模块_thread
+    # 启动一个线程就是把一个函数传入并创建Thread实例，然后调用start()开始执行
+    # 即t = threading.Thread(target=loop, name='LoopThread',args=(5,)) 创建新线程实例
+    # t.start() 启动新线程 t.join() 等待t执行玩再执行后面的代码，用于同步
+    # threading.current_thread().name返回当前线程的名字 主线程为MainThread 创建的线程名字为自己输入的名字LoopThread
+    # current_thread() 返回当前线程的实例。主线程实例的名字叫MainThread，子线程的名字在创建时指定（如果不起名字Python就自动给线程命名为Thread-1，Thread-2……）
+    import time, threading
+    def loop():                      # 新线程执行的代码:
+        print('thread %s is running...' % threading.current_thread().name)
+        n = 0
+        while n < 5:
+            n = n + 1
+            print('thread %s >>> %s' % (threading.current_thread().name, n))
+            time.sleep(1)
+        print('thread %s ended.' % threading.current_thread().name)
+
+    print('thread %s is running...' % threading.current_thread().name)
+    t = threading.Thread(target=loop, name='LoopThread')
+    t.start()
+    t.join()
+    print('thread %s ended.' % threading.current_thread().name)
+
+    # 执行结果
+    # thread MainThread is running...
+    # thread LoopThread is running...
+    # thread LoopThread >>> 1        
+    # thread LoopThread >>> 2
+    # thread LoopThread >>> 3
+    # thread LoopThread >>> 4
+    # thread LoopThread >>> 5
+    # thread LoopThread ended.
+    # thread MainThread ended.
+
+    # 多进程：各个进程间无关联，不共用资源
+    # 多线程：各个线程共用其所属进程的资源（如变量），所以临界变量必须加锁，否则会产生意料之外的结果
+    # 创建一个锁就是通过threading.Lock()来实现：
+    # lock.acquire() 当多个线程同时执行lock.acquire()时，只有一个线程能成功地获取锁，然后继续执行代码，其他线程就继续等待直到获得锁为止。
+    # lock.release() 获得锁的线程用完后一定要释放锁，否则那些苦苦等待锁的线程将永远等待下去，成为死线程。用try...finally来确保锁一定会被释放
+    import time, threading
+    balance = 0           # 假定这是你的银行存款  多个线程共享此资源会导致其结果出现问题
+    def change_it(n):    # 先存后取，结果应该为0。对临界资源进行改变，改变后为保持原来不变，但是不加锁其结果可能会变
+        global balance
+        balance = balance + n
+        balance = balance - n
+    lock = threading.Lock() # 创建一个锁就是通过threading.Lock()来实现：
+    def run_thread(n):
+        for i in range(100000):
+            lock.acquire()   # 先要获取锁
+            try:           #不太理解为啥放入try finally保证锁一定被释放，可能是防止try中内容有异常吧
+                change_it(n)# 获取锁后，可以放心地改变balance的值
+            finally:
+                lock.release()# 改完了一定要释放锁
+
+    t1 = threading.Thread(target=run_thread, args=(5,))  # 创建新线程1，并传入参数5
+    t2 = threading.Thread(target=run_thread, args=(8,))  # 创建新线程2，并传入参数8
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join()               #保证两个线程都执行完后在显示现在的临界变量balance的值，其应该为0
+    print(balance)
 
 
-
-
-
-
-
+    # Python解释器由于设计时有GIL全局锁，导致了多线程无法利用多核。即使100个线程跑在100核CPU上，也只能用到1个核。
+    # 在Python中，可以使用多线程，但不要指望能有效利用多核。如果一定要通过多线程利用多核，那只能通过C扩展来实现，
+    # Python虽然不能利用多线程实现多核任务，但可以通过多进程实现多核任务。因为多个Python进程有各自独立的GIL锁，互不影响
+    # GIL锁：
+    # 因为Python的线程虽然是真正的线程，但解释器执行代码时，有一个GIL锁：Global Interpreter Lock，任何Python线程执行前，
+    # 必须先获得GIL锁，然后，每执行100条字节码，解释器就自动释放GIL锁，让别的线程有机会执行。
+    # 这个GIL全局锁实际上把所有线程的执行代码都给上了锁，所以，多线程在Python中只能交替执行，

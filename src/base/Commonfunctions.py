@@ -22,3 +22,12 @@ sorted([36, 5, -12, 9, -21], key=abs)#按绝对值大小排序
 sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower)#忽略大小写的排序
 sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower, reverse=True)#要进行反向排序，不必改动key函数，可以传入第三个参数reverse=True
 [1,25,5,2,5,7].sort()
+
+
+
+import time
+time.sleep(1)  #让该进程等1s再执行
+
+
+
+
