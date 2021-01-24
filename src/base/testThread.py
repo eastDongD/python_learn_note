@@ -1,3 +1,11 @@
+# 是否使用多进程/线程
+#    对于IO密集型任务（涉及到网络、磁盘IO的任务），任务越多，CPU效率越高（不用一直等待IO）当然也是有限度的。最合适的语言就是开发效率最高（代码量最少）的语言，脚本语言是首选，C语言最差（因为开发成本高）
+#    对于计算密集型任务，单任务最好，不要让单核cpu干别的事情。计算密集型任务同时进行的数量应当等于CPU的核心数，C语言性能最好
+# 多进程和多线程的选择：
+#    在Thread和Process中，应当优选Process（但是Windows进程开销太大，应该用线程），因为Process更稳定，而且，Process可以分布到多台机器上，而Thread最多只能分布到同一台机器的多个CPU上。
+
+# 单线程的异步编程模型称为协程，有了协程的支持，就可以基于事件驱动编写高效的多任务程序。
+
 # 多进程的实现：
 # 在Unix，linux，mac上可以使用fork创建子进程，需要注意的是普通的函数调用一次返回一次，fork调用一次，父进程返回一次子进程id，子进程返回一次0
 if False:
@@ -204,7 +212,8 @@ if False:
     # 多线程：各个线程共用其所属进程的资源（如变量），所以临界变量必须加锁，否则会产生意料之外的结果
     # 创建一个锁就是通过threading.Lock()来实现：
     # lock.acquire() 当多个线程同时执行lock.acquire()时，只有一个线程能成功地获取锁，然后继续执行代码，其他线程就继续等待直到获得锁为止。
-    # lock.release() 获得锁的线程用完后一定要释放锁，否则那些苦苦等待锁的线程将永远等待下去，成为死线程。用try...finally来确保锁一定会被释放
+    # lock.release() 获得锁的线程用完后一定要释放锁，否则那些苦苦等待锁的线程将永远等待下去，成为死线程。
+    #            用try...finally来确保锁一定会被释放。可能是防止对临界资源x操作有异常吧，如x=0时，4/x
     import time, threading
     balance = 0           # 假定这是你的银行存款  多个线程共享此资源会导致其结果出现问题
     def change_it(n):    # 先存后取，结果应该为0。对临界资源进行改变，改变后为保持原来不变，但是不加锁其结果可能会变
@@ -235,4 +244,264 @@ if False:
     # GIL锁：
     # 因为Python的线程虽然是真正的线程，但解释器执行代码时，有一个GIL锁：Global Interpreter Lock，任何Python线程执行前，
     # 必须先获得GIL锁，然后，每执行100条字节码，解释器就自动释放GIL锁，让别的线程有机会执行。
-    # 这个GIL全局锁实际上把所有线程的执行代码都给上了锁，所以，多线程在Python中只能交替执行，
+    # 这个GIL全局锁实际上把所有线程的执行代码都给上了锁，所以，多线程在Python中只能交替执行
+
+
+
+
+
+
+# ThreadLocal解决了参数在一个线程中各个函数之间互相传递的问题。
+# 即一个局部变量参数，该线程下多个函数都要使用，且可能改变，每次传参太麻烦，通过ThreadLocal可以不传参，让函数直接使用
+if False:
+    # 首先local_school = threading.local() 创建全局ThreadLocal对象
+    # 然后将想传递的局部变量student用 local_school.student = name 进行赋值。每个Thread对它都可以读写student属性，但互不影响
+    # 之后可以在该线程调用的函数中直接使用 local_school.student 进行访问（不用显式的传递该参数）
+    # 你可以把local_school看成全局变量，但每个属性如local_school.student都是线程的局部变量，可以任意读写而互不干扰，也不用管理锁的问题，ThreadLocal内部会处理。
+    # 也可以理解为全局变量local_school是一个dict，不但可以用local_school.student，还可以绑定其他变量，如local_school.teacher等等。
+    import threading
+    local_school = threading.local()   # 创建全局ThreadLocal对象:
+    def process_student():           #此函数要用到线程中的局部变量，但是通过ThreadLocal，不用传入该变量
+        std = local_school.student   # 获取当前线程关联的student
+        print('Hello, %s (in %s)' % (std, threading.current_thread().name))
+    def process_thread(name):
+        local_school.student = name  # 绑定ThreadLocal的student:
+        process_student()
+    t1 = threading.Thread(target= process_thread, args=('Alice',), name='Thread-A')
+    t2 = threading.Thread(target= process_thread, args=('Bob',), name='Thread-B')
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join()
+    # 运行结果：
+    # Hello, Alice (in Thread-A)
+    # Hello, Bob (in Thread-B)
+
+
+
+    # 一种不给函数传参的思路，其改进方法是ThreadLocal，这种方法完全没有，但可以记下这种思想
+    # 通过全局的dict，让每个线程根据线程名存变量，减少的调用函数时的参数调用，但是缺点是一个dict只能给一个线程存一个变量
+    # 并且写起来看起来很丑
+    global_dict = {}
+    def std_thread(name):
+        std = Student(name)
+        global_dict[threading.current_thread()] = std      # 把std放到全局变量global_dict中：
+        do_task_1()
+        do_task_2()
+    def do_task_1():
+        std = global_dict[threading.current_thread()]# 不传入std，而是根据当前线程查找
+    def do_task_2():
+        std = global_dict[threading.current_thread()]# 任何函数都可以查找出当前线程的std变量
+
+
+
+# 分布式程序：
+# Python的multiprocessing模块不但支持多进程，其中managers子模块还支持把多进程分布到多台机器上。
+# 一个服务进程可以作为调度者，将任务分布到其他多个进程中，依靠网络通信。
+# （核心思想是通过managers模块把Queue通过网络暴露出去，就可以让其他机器的进程访问Queue了，进而协作完成任务）
+# Queue对象存储在task_master.py进程中
+
+
+# 服务进程：服务进程负责启动Queue，把Queue注册到网络上，然后往Queue里面写入任务：
+# 首先建立两个任务的队列queue.Queue()和重写下队列管理器（继承自BaseManager),并将两个任务队列关联到队列管理器上
+# 然后给队列管理器绑定端口和验证码，并启动队列管理器
+# 现在可以真正的从网络上获取两个队列管理器了（通过关联时的关联名）
+# (当我们在一台机器上写多进程程序时，创建的Queue可以直接拿来用.在分布式多进程环境下，必须通过manager.get_task_queue()获得的Queue接口添加。)
+# 然后通过get和put用两个队列管理器进行通信，用完后关闭队列管理器
+
+# task_master.py   服务进程文件，其可以作为调度者，将任务分布到其他多个进程中，依靠网络通信。
+# Win10不能直接用，因为无法直接序列化lambda函数，且外部用python要加上 if __name__ == '__main__':才能执行
+# 且  #!/usr/bin/env python3   # -*- coding: utf-8 -*-  这两个注释保证目标主机不会被积极拒绝
+# 具体能运行的代码放到了最后
+if False:
+    import random, time, queue
+    from multiprocessing.managers import BaseManager
+    task_queue = queue.Queue()        # 发送任务的队列
+    result_queue = queue.Queue()      # 接收结果的队列
+    class QueueManager(BaseManager):  # 从BaseManager继承的QueueManager:
+        pass
+    # 把两个Queue都注册到网络上, callable参数关联了Queue对象:
+    QueueManager.register('get_task_queue', callable=lambda: task_queue) # 由于QueueManager管理的不止一个Queue，
+    QueueManager.register('get_result_queue', callable=lambda: result_queue) # 所以，要给每个Queue的网络调用接口起个名字，比如get_task_queue。
+    manager = QueueManager(address=('', 8088), authkey=b'abc')  # 绑定端口5000, 设置验证码'abc' 
+                                                                #authkey是为了保证两台机器正常通信，不被其他机器恶意干扰。
+    manager.start()            # 启动Queue
+    # 获得通过网络访问的Queue对象：
+    task = manager.get_task_queue()
+    result = manager.get_result_queue()
+    # 放几个任务进去: （把要传的内容放入发送任务的队列task）
+    for i in range(10):
+        n = random.randint(0, 10000)
+        print('Put task %d...' % n)
+        task.put(n)                          #把要传的内容放入发送任务的队列
+    # 从result队列读取结果:
+    print('Try get results...')
+    for i in range(10):
+        r = result.get(timeout=10)              #？？？？？timeout参数啥意思
+        print('Result: %s' % r)
+    manager.shutdown()        # 关闭Queue
+    print('master exit.')
+# 任务进程，获取服务器的两个Queue，通过Queue的内容，协作完成任务
+# 首先写个继承自BaseManager的类即管理队列，然后在网上注册两个Queue即QueueManager.register('get_task_queue')
+# 创建管理队列，然后通过管理队列进行网络连接，然后通过管理队列获取两个注册过的队列
+# 通过两个队列的get和put方法进行交互，协作完成任务
+
+# task_worker.py  任务进程文件，在另一台机器上启动任务进程（本机上启动也可以,另一个py文件）
+# Win10不能直接用，因为无法直接序列化lambda函数，且外部用python要加上 if __name__ == '__main__':才能执行
+# 且  #!/usr/bin/env python3   # -*- coding: utf-8 -*-  这两个注释保证目标主机不会被积极拒绝
+# 具体能运行的代码放到了最后
+if False:
+    import time, sys, queue
+    from multiprocessing.managers import BaseManager
+    class QueueManager(BaseManager):   # 创建类似的QueueManager:
+        pass
+    # 由于这个QueueManager只从网络上获取Queue，所以注册时只提供名字:
+    QueueManager.register('get_task_queue')
+    QueueManager.register('get_result_queue')
+
+    # 连接到服务器，也就是运行task_master.py的机器:
+    server_addr = '127.0.0.1'
+    print('Connect to server %s...' % server_addr)
+    # 端口和验证码注意保持与task_master.py设置的完全一致:  创建队列管理器
+    m = QueueManager(address=(server_addr, 5000), authkey=b'abc')
+    m.connect()  # 从网络连接
+    # 获取Queue的对象:
+    task = m.get_task_queue()
+    result = m.get_result_queue()
+    # 从task队列取任务,并把结果写入result队列:
+    for i in range(10):
+        try:
+            n = task.get(timeout=1)
+            print('run task %d * %d...' % (n, n))
+            r = '%d * %d = %d' % (n, n, n*n)
+            time.sleep(1)
+            result.put(r)
+        except Queue.Empty:
+            print('task queue is empty.')
+    # 处理结束:
+    print('worker exit.')
+
+# 真正能直接运行的代码 （先放到两个py文件中）
+# cmd命令行下 python task_master.py启动服务进程。task_master.py进程发送完任务后，开始等待result队列的结果。
+# 然后python task_worker.py启动任务进程。
+# 现在只能启动一个task_worker.py进程（有两台电脑能否启动两个？？？，反正现在一台电脑报错）
+if False:
+    # task_master.py
+    #!/usr/bin/env python3
+    # -*- coding: utf-8 -*-
+
+    import random, time, queue
+    from multiprocessing.managers import BaseManager
+    # 从BaseManager继承的QueueManager:
+    class QueueManager(BaseManager):
+        pass
+    # 发送任务的队列:
+    task_queue = queue.Queue()
+    # 接收结果的队列:
+    result_queue = queue.Queue()
+
+    def reTaQu():
+        return task_queue
+    def reReQu():
+        return result_queue
+
+
+    if __name__ == '__main__':
+        # 把两个Queue都注册到网络上, callable参数关联了Queue对象:
+        QueueManager.register('get_task_queue', callable=reTaQu)
+        QueueManager.register('get_result_queue', callable=reReQu)
+        # 绑定端口5000, 设置验证码'abc':
+        manager = QueueManager(address=('127.0.0.1', 5000), authkey=b'abc')
+        # 启动Queue:
+        manager.start()
+        # 获得通过网络访问的Queue对象:
+        task = manager.get_task_queue()
+        result = manager.get_result_queue()
+        # 放几个任务进去:
+        for i in range(10):
+            n = random.randint(0, 10000)
+            print('Put task %d...' % n)
+            task.put(n)
+        # 从result队列读取结果:
+        print('Try get results...')
+        for i in range(10):
+            r = result.get(timeout=10)
+            print('Result: %s' % r)
+        # 关闭:
+        manager.shutdown()
+        print('master exit.')
+
+    # task_worker.py
+    #!/usr/bin/env python3
+    # -*- coding: utf-8 -*-
+    
+    import time, sys, queue
+    from multiprocessing.managers import BaseManager
+    # 创建类似的QueueManager:
+    class QueueManager(BaseManager):
+        pass
+    if __name__ == '__main__':
+        # 由于这个QueueManager只从网络上获取Queue，所以注册时只提供名字:
+        QueueManager.register('get_task_queue')
+        QueueManager.register('get_result_queue')
+        # 连接到服务器，也就是运行task_master.py的机器:
+        server_addr = '127.0.0.1'
+        print('Connect to server %s...' % server_addr)
+        # 端口和验证码注意保持与task_master.py设置的完全一致:
+        m = QueueManager(address=(server_addr, 5000), authkey=b'abc')
+        # 从网络连接:
+        m.connect()
+        # 获取Queue的对象:
+        task = m.get_task_queue()
+        result = m.get_result_queue()
+        # 从task队列取任务,并把结果写入result队列:
+        for i in range(10):
+            try:
+                n = task.get(timeout=1)
+                print('run task %d * %d...' % (n, n))
+                r = '%d * %d = %d' % (n, n, n*n)
+                time.sleep(1)
+                result.put(r)
+            except Queue.Empty:
+                print('task queue is empty.')
+        # 处理结束:
+        print('worker exit.')
+
+    # 运行结果：
+    # 服务端：
+    # Put task 7690...
+    # Put task 3200...
+    # Put task 9190...
+    # Put task 8387...
+    # Put task 6073...
+    # Put task 343...
+    # Put task 7141...
+    # Put task 5001...
+    # Put task 9382...
+    # Put task 150...
+    # Try get results...
+    # Result: 7690 * 7690 = 59136100
+    # Result: 3200 * 3200 = 10240000
+    # Result: 9190 * 9190 = 84456100
+    # Result: 8387 * 8387 = 70341769
+    # Result: 6073 * 6073 = 36881329
+    # Result: 343 * 343 = 117649
+    # Result: 7141 * 7141 = 50993881
+    # Result: 5001 * 5001 = 25010001
+    # Result: 9382 * 9382 = 88021924
+    # Result: 150 * 150 = 22500
+    # master exit.
+
+    # 任务端：
+    # Connect to server 127.0.0.1...
+    # run task 7690 * 7690...
+    # run task 3200 * 3200...
+    # run task 9190 * 9190...
+    # run task 8387 * 8387...
+    # run task 6073 * 6073...
+    # run task 343 * 343...
+    # run task 7141 * 7141...
+    # run task 5001 * 5001...
+    # run task 9382 * 9382...
+    # run task 150 * 150...
+    # worker exit.
