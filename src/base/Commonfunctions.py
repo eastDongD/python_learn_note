@@ -4,6 +4,7 @@ print(int("1011",2))#把字符串转换为整数，其中字符串是二进制�
 "qwe".islower() 
 "WQE".isupper()
 "123".isdigit()
+print(','.join(l))#l为一个list，将list的内容以','为间隔，拼接为一个字符串显示
 
 #map和reduce和filter和sorted的详细使用在testFunction.py中，这两个都是对一个序列的所有内容依次调用函数用的
 #map是对每个元素调用同样的函数，reduce把一个函数作用在一个序列[x1, x2, x3, ...]上，这个函数必须接收两个参数，reduce把结果继续和序列的下一个元素做累积计算
