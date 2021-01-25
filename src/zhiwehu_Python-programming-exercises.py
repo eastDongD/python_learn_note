@@ -234,5 +234,31 @@ if False:
 #   each separated by a comma. Example If the following passwords are given as input
 #    to the program: ABd1234@1,a F1#,2w3E*,2We3345 Then, the output of the program should be: ABd1234@1
 
+#re.search("[a-z]",p)
 
 
+import re
+def isPassword(x):
+    if not isinstance(x,str):
+        raise TypeError("%s is not str"%x)
+    length=len(x)
+    if length<6 or length>12:
+        return False
+    if re.match(r".*?[$#@].*?",x)==None:
+        return False
+    if re.match(r".*?[0-9].*?",x)==None:
+        return False
+    if re.match(r".*?[a-z].*?",x)==None:
+        return False
+    if re.match(r".*?[A-Z].*?",x)==None:
+        return False
+    return True
+
+
+s=input("please input a sequence of comma separated passwords: ")
+l=re.split(r"\,",s)
+out=[]
+for x in l:
+    if isPassword(x):
+        out.append(x)
+print(",".join(out))
