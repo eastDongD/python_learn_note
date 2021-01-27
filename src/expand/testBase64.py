@@ -14,6 +14,8 @@ base64.b64decode(b'YmluYXJ5AHN0cmluZw==')#b'binary\x00string'    用base64对byt
 base64.b64encode(b'i\xb7\x1d\xfb\xef\xff') #b'abcd++//'
 base64.urlsafe_b64encode(b'i\xb7\x1d\xfb\xef\xff')#b'abcd--__'
 base64.urlsafe_b64decode('abcd--__')#b'i\xb7\x1d\xfb\xef\xff'
+print(base64.urlsafe_b64encode(b'q\xa6\xdcu\xd6\xfe\xfb\xff')) #b'cabcddb--_8='  字符数量不够4的倍数时加=补足
+print(base64.urlsafe_b64decode('cabcddb--__=')) #b'q\xa6\xdcu\xd6\xfe\xfb\xff'
 
 # 由于=在URL，Cookie等地方可能有歧义，所以可以手动去掉Base64最后的=
 # 去掉=后的解码思路：Base64编码的长度（字符数量）永远是4的倍数，不是4的倍数时，加=使其成为4的倍数
