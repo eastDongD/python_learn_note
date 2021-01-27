@@ -51,4 +51,7 @@ if False:
     h2=hmac.new(key,shortMessage1,digestmod="MD5")
     h2.update(shortMessage2)
     print(h2.hexdigest())  #fa4ee7d173f2d97ee79022d1a7355bcf
+    #也可以写为
+    hmac.new(key, 'Hello, world!'.encode('utf-8'), 'MD5').hexdigest() #fa4ee7d173f2d97ee79022d1a7355bcf
+  
 
