@@ -1,4 +1,5 @@
 # hashlib模块提供了常见的哈希算法（摘要算法）如MD5，SHA1等等
+# hmac模块实现了标准的Hmac算法.(即加了key进行杂糅信息后，在进行哈希算法)
 # 哈希算法：通过一个函数，把任意长度的数据转换为一个长度固定的数据串。目的是为了发现原始数据是否被人篡改过。
 # 摘要函数是一个单向函数，计算f(data)很容易，但通过digest反推data却非常困难。
 # 而且，对原始数据做一个bit的修改，都会导致计算出的摘要完全不同
@@ -12,30 +13,42 @@
 
 
 
+if False:
+    # MD5算法： 生成结果是固定的128 bit字节，通常用一个32位的16进制字符串表示
+    import hashlib
+    md5 = hashlib.md5()
+    md5.update('how to use md5 in python hashlib?'.encode('utf-8'))
+    print(md5.hexdigest()) #d26a53750bc40b38b65a520292f69306
+    # 如果数据量很大，可以分块多次调用update()，最后计算的结果是一样的：
+    import hashlib
+    md5 = hashlib.md5()
+    md5.update('how to use md5 in '.encode('utf-8'))
+    md5.update('python hashlib?'.encode('utf-8'))
+    print(md5.hexdigest())
+    # 也可以直接调用
+    hashlib.md5('how to use md5 in python hashlib?'.encode('utf-8')).hexdigest() #d26a53750bc40b38b65a520292f69306
 
-# MD5算法： 生成结果是固定的128 bit字节，通常用一个32位的16进制字符串表示
-import hashlib
-md5 = hashlib.md5()
-md5.update('how to use md5 in python hashlib?'.encode('utf-8'))
-print(md5.hexdigest()) #d26a53750bc40b38b65a520292f69306
-# 如果数据量很大，可以分块多次调用update()，最后计算的结果是一样的：
-import hashlib
-md5 = hashlib.md5()
-md5.update('how to use md5 in '.encode('utf-8'))
-md5.update('python hashlib?'.encode('utf-8'))
-print(md5.hexdigest())
-# 也可以直接调用
-hashlib.md5('how to use md5 in python hashlib?'.encode('utf-8')).hexdigest() #d26a53750bc40b38b65a520292f69306
+if False:
+    # SHA1算法：SHA1的结果是160 bit字节，通常用一个40位的16进制字符串表示。
+    import hashlib
+    sha1 = hashlib.sha1()
+    sha1.update('how to use sha1 in '.encode('utf-8'))
+    sha1.update('python hashlib?'.encode('utf-8'))
+    print(sha1.hexdigest())
 
-
-# SHA1算法：SHA1的结果是160 bit字节，通常用一个40位的16进制字符串表示。
-import hashlib
-sha1 = hashlib.sha1()
-sha1.update('how to use sha1 in '.encode('utf-8'))
-sha1.update('python hashlib?'.encode('utf-8'))
-print(sha1.hexdigest())
-
-
-
-
+# Hmac算法： 提供key和message后将其杂凑到一块，然后按照你选的hash算法求哈希值。hmac输出的长度和原始哈希算法的长度一致
+# 即不用手动加qqq，而是提供key=qqq，它给你找位置加，然后计算哈希值。
+# hmac模块实现了标准的Hmac算法,需要注意传入的key和message都是bytes类型，str类型需要首先编码为bytes。
+if False:
+    import hmac
+    message = b'Hello, world!'
+    key = b'secret'
+    h = hmac.new(key, message, digestmod='MD5')
+    h.hexdigest() #'fa4ee7d173f2d97ee79022d1a7355bcf'
+    # 如果消息很长，可以多次调用h.update(msg)
+    shortMessage1=b"Hello, "
+    shortMessage2=b"world!"
+    h2=hmac.new(key,shortMessage1,digestmod="MD5")
+    h2.update(shortMessage2)
+    print(h2.hexdigest())  #fa4ee7d173f2d97ee79022d1a7355bcf
 
