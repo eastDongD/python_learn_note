@@ -37,6 +37,15 @@ sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower, reverse=True)#要进行
 import time
 time.sleep(1)  #让该进程等1s再执行
 
+import time
+print("3s后显示下一条")
+time.sleep(3)
 
+from collections.abc import Iterable
+isinstance('abc', Iterable) # 判断str是否可迭代，返回True
+
+a="str"
+print("a是字符串",a)     #即同一个变量可以赋不同类型的值
+print(type(a))          #显示数据的类型 <class 'str'>
 
 

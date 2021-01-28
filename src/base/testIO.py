@@ -4,8 +4,12 @@ if False:
     if(grade>60):
         print("你及格了")
         print("你的成绩是"+str(grade)) #字符串拼接时要保证grade是字符串
-
-
+print("number1=",number1,"number2=",number2,"number3=",number3)
+print("Hello world!!")
+print("what\'s your name")
+print("what's your name")#双引号内的单引号不用转义字符
+name=input("please input your name:")#input()内可以放字符串进行提示
+print("hello",name) #print()函数可以根据“，”进行拼接输出的字符串，同时将“，”输出为一个空格
 #字符串str类型和字节byte类型的转换，及传输时按照固定格式解码以及编码
 if(False):
     print("abc")    #"abc"是一个字符串str类型的数据
