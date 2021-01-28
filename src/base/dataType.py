@@ -34,6 +34,17 @@ if False:
     l="13,14,15,16,17,18".split(",")  # 用split分割字符串，返回一个list ['13', '14', '15', '16', '17', '18']
     print(','.join(l))                # l为一个list，将list的内容以','为间隔，拼接为一个字符串显示 13,14,15,16,17,18
 
+# Counter是一个简单的计数器，例如，统计字符出现的个数：
+# Counter实际上也是dict的一个子类，下面的结果可以看出每个字符出现的次数。
+if False:
+    from collections import Counter
+    # c = Counter()
+    # for ch in 'programming':
+    #     c[ch] = c[ch] + 1
+    c = Counter('programming')  #和上面那种写法的结果是一样的
+    print(c) # Counter({'r': 2, 'g': 2, 'm': 2, 'p': 1, 'o': 1, 'a': 1, 'i': 1, 'n': 1})
+    c.update('hello') # 也可以一次性update
+    print(c) # Counter({'r': 2, 'o': 2, 'g': 2, 'm': 2, 'l': 2, 'p': 1, 'a': 1, 'i': 1, 'n': 1, 'h': 1, 'e': 1})
 
 # 字符串和各种数据类型间的转换
 if False:

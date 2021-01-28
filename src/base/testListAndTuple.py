@@ -1,6 +1,8 @@
 # 首先是list列表和不变列表tuple的基本使用，然后介绍了切片帮助从list和tuple中取大量的数据
-# 然后介绍了列表生成式简便的生成有规律的列表，最后是列表生成器用于一边使用一边生成的列表（节约空间，可以表示无穷序列）
-
+# 然后介绍了列表生成式简便的生成有规律的列表，然后是列表生成器用于一边使用一边生成的列表（节约空间，可以表示无穷序列）
+# 接下来是用python的内建模块collections进行对list和tuple的改进
+# deque是为了高效实现插入和删除操作的双向列表，适合用于队列和栈
+# namedtuple帮助你自动创建tuple的子类，让你可以通过属性更直观的访问数据
 
 # list列表，存储一组各种各样的数据。list内容可修改。list内部数据类型可以不一样（如同时有整数和字符串）
 # 通过索引访问，索引正着数0,1,2,3.....倒着数 -1,-2,-3,....
@@ -103,3 +105,37 @@ if False:
         except StopIteration as e:
             print('Generator return value:', e.value)
             break
+
+
+# deque是为了高效实现插入和删除操作的双向列表，适合用于队列和栈
+# 使用list存储数据时，按索引访问元素很快，但是插入和删除元素就很慢了，因为list是线性存储，数据量大的时候，插入和删除效率很低。
+# 常用方法有append()，pop()，appendleft()，popleft()
+if False:
+    from collections import deque
+    q = deque(['a', 'b', 'c'])
+    q.append('x')
+    q.appendleft('y')
+    print(q)   #deque(['y', 'a', 'b', 'c', 'x'])
+    q.pop()
+    q.popleft() 
+    print(q)   #deque(['a', 'b', 'c'])
+
+
+# namedtuple用来创建一个自定义的tuple对象，并且规定了tuple元素的个数，并可以用属性而不是索引来引用tuple的某个元素
+# 作用：tuple存数据访问时用索引不直观，单独创建类麻烦，namedtuple帮助你自动创建类
+# 可以理解为namedtuple返回的对象是一个类的定义，且只有属性的访问方法，可以通过该类的定义创建类的实例（但实例是tuple子类，定义不是）
+# namedtuple('名称', [属性list])
+if False:
+    from collections import namedtuple
+    Point = namedtuple('Point', ['x', 'y'])
+    print(type(Point))                       # <class 'type'>
+    p = Point(1, 2)
+    q = Point(3, 4)
+    print("p.x="+str(p.x)+" p.y="+str(p.y))  # p.x=1 p.y=2
+    print("q.x="+str(q.x)+" q.y="+str(q.y))  # q.x=3 q.y=4
+    print(isinstance(p, tuple))              # True
+    print(isinstance(Point,tuple))           # False
+    print(isinstance(p,Point))               # True
+
+    # 定义一个圆
+    Circle = namedtuple('Circle', ['x', 'y', 'r'])
