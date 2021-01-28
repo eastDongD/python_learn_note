@@ -13,7 +13,7 @@
 
 
 # 对dict的操作
-if True:
+if False:
     # dict可以将key作为索引，进行访问和赋值
     d = {'Michael': 95, 'Bob': 75, 'Tracy': 85}
     print("Bob="+str(d["Bob"]))              # 根据key进行访问

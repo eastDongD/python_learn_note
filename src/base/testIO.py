@@ -7,6 +7,7 @@ if False:
 print("number1=",number1,"number2=",number2,"number3=",number3)
 print("Hello world!!")
 print("what\'s your name")
+print("str1=",str1,"str2=",str2,"str3=",str3,"str4=",str4,"str5=",str5)
 print("what's your name")#双引号内的单引号不用转义字符
 name=input("please input your name:")#input()内可以放字符串进行提示
 print("hello",name) #print()函数可以根据“，”进行拼接输出的字符串，同时将“，”输出为一个空格
