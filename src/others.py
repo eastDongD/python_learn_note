@@ -18,3 +18,5 @@ def triangles():
 g=triangles()
 for x in g:
     print(x)
+
+# 能用了吗
