@@ -58,6 +58,8 @@ if False:
     [x for x in range(1, 11) if x % 2 == 0]               # [2, 4, 6, 8, 10]
     # if在for前做的是一个表达式，必须根据x算一个结果，此时必须带else
     [str(x) if x % 2 == 0 else -x for x in range(1, 11)]  # [-1, '2', -3, '4', -5, '6', -7, '8', -9, '10']
+    import numpy as np
+    k=[np.random.randint(1,100) for x in range(100)]  # 100个1-100间的随机数列表
 
 # 列表生成器：如果列表特别大，而我们不需要所有的内容，可以需要list中哪个元素时，计算出哪个元素，不一次性得到整个list
 # 优点：节约空间，可以表示无穷的数列
